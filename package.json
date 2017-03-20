@@ -1,0 +1,138 @@
+<html>
+<head>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+       
+
+        $(function(){
+            var iosocket = io.connect();
+            iosocket.on('connect', function () {
+                   $('#incomingChatMessages').append($('<li>Connected</li>'));
+
+            iosocket.on('message', function(message) {
+                   $('#incomingChatMessages').append($('<li></li>').text(message));
+            });
+
+            iosocket.on('disconnect', function() {
+                   $('#incomingChatMessages').append('<li>Disconnected</li>');
+             });
+       });
+
+       $('#outgoingChatMessage').keypress(function(event) {
+           if(event.which == 13) {
+                event.preventDefault();
+                iosocket.send($('#outgoingChatMessage').val());
+                $('#incomingChatMessages').append($('<li></li>').text($('#outgoingChatMessage').val()));
+                $('#outgoingChatMessage').val('');
+           }
+       });
+
+       $('#ledon').click(function(event) {
+                event.preventDefault();
+                iosocket.send('led on').text();
+       });
+
+       $('#ledoff').click(function(event) {
+                event.preventDefault();
+                iosocket.send($('#ledoff').text());
+       });
+
+       $('#motionon').click(function(event) {
+                event.preventDefault();
+                iosocket.send($('#motionon').text());
+       });
+       $('#motionoff').click(function(event) {
+                event.preventDefault();
+                iosocket.send($('#motionoff').text());
+       });
+
+   });
+</script>
+</head>
+<body>
+
+<!--<Incoming Chat: <ul id="incomingChatMessages"></ul>
+<br />
+<input type="text" id="outgoingChatMessage">-->
+<p> led </p>
+<P id = 'led'></P>
+<button type="button" id = 'ledon' value ='led on'>led on</button>
+<button type="button" id = 'ledoff'  value = 'led off'>led off</button>
+
+<p> motion sensor</p>
+<p id = 'sensor'></p>
+<button type="button" id = 'motionon'  value ='motion on'>motion on</button>
+<button type="button" id = 'motionoff' value ='motionoff'>motion off</button>
+
+
+
+<p> motion detected </p>
+<p id = "motion"></p>
+<p> long motion</p>
+<p id = "long"></p>
+<p> short motion </p>
+<p id = "short"></p>
+
+
+
+
+
+</body>
+<script>
+var motion = 0;
+document.getElementById('motion').innerHTML = motion;
+var short = 0;
+document.getElementById('short').innerHTML = short;
+var long = 0;
+document.getElementById('long').innerHTML = long;
+var led = 'off';
+document.getElementById('led').innerHTML = led;
+var sensor = 'off';
+document.getElementById('sensor').innerHTML = sensor;
+//var socketio=require('socket.io');
+//var client = io.connect('http://localhost:8080');
+</script>
+
+<script>
+$(function(){
+var iosocket = io.connect();
+
+iosocket.on('long motion', function(){
+motion++;
+    document.getElementById('motion').innerHTML = motion;
+    long++;
+    document.getElementById('long').innerHTML = long;
+});
+
+iosocket.on('short motion', function(){
+motion = motion + 1;
+    document.getElementById('motion').innerHTML = motion;
+    short = short + 1;
+    document.getElementById('short').innerHTML = short;
+});
+
+iosocket.on('sensor on', function(){
+sensor = 'on';
+document.getElementById('sensor').innerHTML = sensor;
+});
+
+iosocket.on('sensor off', function(){
+sensor = 'off';
+document.getElementById('sensor').innerHTML = sensor;
+});
+
+iosocket.on('led off', function(){
+led = 'off';
+document.getElementById('led').innerHTML = led;
+});
+
+iosocket.on('led on', function(){
+led = 'on';
+document.getElementById('led').innerHTML = led;
+});
+
+});
+
+</script>
+</html>
